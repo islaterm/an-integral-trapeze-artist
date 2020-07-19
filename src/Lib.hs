@@ -5,8 +5,10 @@
 
 -- You should have received a copy of the license along with this
 -- work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
+
+-- v1.0-b.1
 module Lib
-  ( pintegral
+  ( pintegral, integral
   )
 where
 
@@ -16,9 +18,19 @@ import           Data.List.Split
 
 type Number = Double
 
--- parte (a)
+{-| Computes an integral using the trapezoid rule method.
+    Sequential version.
+-}
 integral :: (Number -> Number) -> Number -> Number -> Int -> Number
-integral = undefined -- complete aquí su código
+integral f a b n = h / 2 * sum (genPartitions 0)
+ where
+  h = (b - a) / fromIntegral n
+  genPartitions i = if i > n
+    then []
+    else
+      f (a + fromIntegral i * h)
+      + f (a + fromIntegral (i + 1) * h)
+      : genPartitions (i + 1)
 
 
 -- parte (b)
