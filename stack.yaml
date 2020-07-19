@@ -1,0 +1,8 @@
+resolver: nightly-2020-03-01
+
+packages:
+- .
+
+extra-deps:
+- parallel-3.2.2.0
+- split-0.2.3.4
