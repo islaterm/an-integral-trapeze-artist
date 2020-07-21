@@ -8,7 +8,8 @@
 
 -- v1.0-b.1
 module Lib
-  ( pintegral, integral
+  ( pintegral
+  , integral
   )
 where
 
@@ -17,26 +18,29 @@ import           Data.List.Split
 
 
 type Number = Double
+type Interval = (Number, Number)
+type Index = Int
+
+g :: (Number -> Number) -> Number -> Number -> Index -> Number
+g f a h' i = f (a + fromIntegral i * h') + f (a + fromIntegral (i + 1) * h')
+
+genPartitions
+  :: (Number -> Number) -> Number -> Int -> Number -> Index -> [Number]
+genPartitions f a n h i =
+  if i > n then [] else g f a h i : genPartitions f a n h (i + 1)
 
 {-| Computes an integral using the trapezoid rule method.
     Sequential version.
 -}
 integral :: (Number -> Number) -> Number -> Number -> Int -> Number
-integral f a b n = h / 2 * sum (genPartitions 0)
- where
-  h = (b - a) / fromIntegral n
-  genPartitions i = if i > n
-    then []
-    else
-      f (a + fromIntegral i * h)
-      + f (a + fromIntegral (i + 1) * h)
-      : genPartitions (i + 1)
+integral f a b n = h / 2 * sum (genPartitions f a n h 0)
+  where h = (b - a) / fromIntegral n
 
-
--- parte (b)
 pintegral :: (Number -> Number) -> Number -> Number -> Int -> Number
-pintegral = undefined -- complete aquí su código
-
+pintegral f a b n = undefined --evalSums 0 50
+--  where
+--   h' = h (a, b) n
+--   evalSums lo parts = sum (map (g f a h') [lo .. parts])
 
 -- parte (c)
 -- Elapsed time sequential version: complete aquí
