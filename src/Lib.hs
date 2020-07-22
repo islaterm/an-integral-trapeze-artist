@@ -6,7 +6,7 @@
 -- You should have received a copy of the license along with this
 -- work. If not, see <http://creativecommons.org/licenses/by/4.0/>.
 
--- v1.0-b.1
+-- v1.0-b.2
 module Lib
   ( pintegral
   , integral
@@ -36,16 +36,19 @@ integral :: (Number -> Number) -> Number -> Number -> Int -> Number
 integral f a b n = h / 2 * sum (genPartitions f a n h 0)
   where h = (b - a) / fromIntegral n
 
+{-| Computes an integral using the trapezoid rule method.
+    Parallel version.
+-}
 pintegral :: (Number -> Number) -> Number -> Number -> Int -> Number
-pintegral f a b n = undefined --evalSums 0 50
---  where
---   h' = h (a, b) n
---   evalSums lo parts = sum (map (g f a h') [lo .. parts])
-
--- parte (c)
+pintegral f a b n = h / 2 * runEval (evalSums 0)
+ where
+  h = (b - a) / fromIntegral n
+  subSums lo hi = if lo > hi then [] else genPartitions f a hi h lo
+  evalSums lo = do
+    s <- rpar $ sum (subSums lo (lo + 50))
+    t <- if lo + 50 < n then evalSums (lo + 50) else rpar 0
+    return $ s + t
+    
 -- Elapsed time sequential version: complete aquí
 -- Elapsed time parallel version: complete aquí
 -- Speedup: complete aquí
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
